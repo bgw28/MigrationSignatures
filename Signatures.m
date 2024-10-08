@@ -58,6 +58,9 @@ if exportFigures
     exportgraphics(fig,"./Export/ConsistencyOverTime.eps")
 end
 
+med = median(singularValue)
+avg = mean(singularValue)
+
 clear full fig singularValue vectors
 
 
