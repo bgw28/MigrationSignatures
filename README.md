@@ -6,7 +6,7 @@ Signatures.m &emsp; &emsp; &emsp; Matlab code to conduct the analysis
 
 netmigration.csv &emsp; &emsp; Net migration by decade, data file
 
-Export/ &emsp; &emsp; &emsp; &emsp; Directory for output figures, and scores csv
+Export/ &emsp; &emsp; &emsp; &emsp; &emsp; Directory for output figures, and scores csv
 
 
 data:
