@@ -1,7 +1,7 @@
 %% User Parameters: 
 dataPath = "./netmigration.csv";    % file path to data file
 exportFigures = true;               % save figures?
-
+showTitles = false;
 
 %% Read Data
 
@@ -51,7 +51,11 @@ xlim([0,1])
 set(gca,'fontname','SansSerif')
 xlabel("Mean Squared Cosine Similarity")
 ylabel("Number of Counties")
+if showTitles
+    title("Continuity of Migration Signatures")
+end
 fontsize(fig, 15, "points")
+
 
 if exportFigures
     exportgraphics(fig,"./Export/ConsistencyOverTime.png",Resolution=150)
@@ -166,7 +170,9 @@ for i = 1:size(signatures,1)
     yticks(linspace(-1,1,5))
     xlabel("Age Groups")
     ylabel("Normalized NMR")
-    title(clusterNames(i))
+    if showTitles
+        title(clusterNames(i))
+    end
     fontsize(fig, 20, "points")
 
     if exportFigures
