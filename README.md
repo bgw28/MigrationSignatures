@@ -10,4 +10,4 @@ Export/ &emsp; &emsp; &emsp; &emsp; &emsp; Directory for output figures, and sco
 
 
 data:
-Egan-Robertson, David, Katherine J. Curtis, Richelle L. Winkler, Kenneth M. Johnson, and Caitlin Bourbeau, Age-Specific Net Migration Estimates for US Counties, 1950-2020. Applied Population Laboratory, University of Wisconsin - Madison, 2024. Web. [Date of access.] https://netmigration.wisc.edu/. 
+Egan-Robertson, David, Katherine J. Curtis, Richelle L. Winkler, Kenneth M. Johnson, and Caitlin Bourbeau, Age-Specific Net Migration Estimates for US Counties, 1950-2020. Applied Population Laboratory, University of Wisconsin - Madison, 2024. Web. [10/8/2024] https://netmigration.wisc.edu/. 
