@@ -54,7 +54,7 @@ ylabel("Number of Counties")
 fontsize(fig, 15, "points")
 
 if exportFigures
-    exportgraphics(fig,"./Export/ConsistencyOverTime.png",Resolution=300)
+    exportgraphics(fig,"./Export/ConsistencyOverTime.png",Resolution=150)
     exportgraphics(fig,"./Export/ConsistencyOverTime.eps")
 end
 
@@ -167,8 +167,8 @@ for i = 1:size(signatures,1)
     fontsize(fig, 20, "points")
 
     if exportFigures
-        exportgraphics(fig,['./Export/',erase(clusterNames{i},"/"),'.png'],resolution=300)
-        exportgraphics(fig,['./Export/',erase(clusterNames{i},"/"),'.eps'],resolution=300)
+        exportgraphics(fig,['./Export/',erase(clusterNames{i},"/"),'.png'],resolution=150)
+        exportgraphics(fig,['./Export/',erase(clusterNames{i},"/"),'.eps'])
     end
 end
 clear colors i fig
