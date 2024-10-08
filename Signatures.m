@@ -54,8 +54,8 @@ ylabel("Number of Counties")
 fontsize(fig, 15, "points")
 
 if exportFigures
-    exportgraphics(fig,"./Figures/ConsistencyOverTime.png",Resolution=300)
-    exportgraphics(fig,"./Figures/ConsistencyOverTime.eps")
+    exportgraphics(fig,"./Export/ConsistencyOverTime.png",Resolution=300)
+    exportgraphics(fig,"./Export/ConsistencyOverTime.eps")
 end
 
 clear full fig singularValue vectors
@@ -163,12 +163,12 @@ for i = 1:size(signatures,1)
     yticks(linspace(-1,1,5))
     xlabel("Age Groups")
     ylabel("Normalized NMR")
-    % title(names(i))
+    title(clusterNames(i))
     fontsize(fig, 20, "points")
 
     if exportFigures
-        exportgraphics(fig,['./Figures/',clusterNames{i},'.png'],resolution=300)
-        exportgraphics(fig,['./Figures/',clusterNames{i},'.eps'],resolution=300)
+        exportgraphics(fig,['./Export/',erase(clusterNames{i},"/"),'.png'],resolution=300)
+        exportgraphics(fig,['./Export/',erase(clusterNames{i},"/"),'.eps'],resolution=300)
     end
 end
 clear colors i fig
@@ -178,7 +178,7 @@ clear colors i fig
 scores = normalize(reshape(permute(dataMatrix(:,:,:,1),[3 1 2]), [], 16),2,'norm') * signatures';
 
 t = cell2table(num2cell(scores));
-t.Properties.VariableNames = [clusterNames{:}];
+t.Properties.VariableNames = clusterNames;
 
 stateName = convertCharsToStrings(reshape(repmat(stateNames,1,size(dataMatrix,3))',[],1));
 
@@ -190,4 +190,7 @@ decades = ["1960";"1970";"1980";"1990";"2000";"2010"];
 decade = reshape(repmat(decades,1,size(dataMatrix,1)),[],1);
 
 scoresTable = [table(stateName,countyName,decade,fips), t];
+writetable(scoresTable,"./Export/SignatureTypeCountyScores.csv")
+
 clear scores t decades stateName countyName fips decade
+
