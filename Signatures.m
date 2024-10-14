@@ -44,10 +44,37 @@ for i = 1:size(full,1)
     singularValue(i) = svds(vectors,1)^2 /6;
 end
 
+% generate empirical estimate of the theoretical ditribution of singular
+% values assuming the migration vectors have a uniform spherical
+% distribution
+
+% generate 10,0000 random samples, each of 6 unit vectors
+% We use a multivariate normal distribution and normalize it to achive the
+% desired uniform spherical distrubtion
+n = 200000;
+sample = mvnrnd(zeros(1,16),eye(16),6*n);
+sample = normalize(sample,2,'norm');
+sample = permute(reshape(sample,[n,6,16]),[2,3,1]);
+
+% compute their average square singular values
+empirical = zeros(n,1);
+for i = 1:n
+    empirical(i) = svds(sample(:,:,i),1)^2 / 6;
+end
+
+% apply a kernel density estimate
+[empiricalDist, evalPoints] = kde(empirical,bandwidth = 0.02);
+evalPoints = [0;evalPoints;1];
+empiricalDist = [0;empiricalDist;0];
+
+
 % plot the distribution
 fig = figure;
-histogram(singularValue,linspace(0,1,26))
-xlim([0,1])
+histogram(singularValue,linspace(0,1,26),Normalization='pdf')
+hold on
+plot(evalPoints,empiricalDist,color='black',LineWidth=3)
+hold off
+xlim([1/6,1])
 set(gca,'fontname','SansSerif')
 xlabel("Mean Squared Cosine Similarity")
 ylabel("Number of Counties")
@@ -55,6 +82,7 @@ if showTitles
     title("Continuity of Migration Signatures")
 end
 fontsize(fig, 15, "points")
+legend("Counties", "Theoretical Random")
 
 
 if exportFigures
@@ -65,7 +93,7 @@ end
 med = median(singularValue)
 avg = mean(singularValue)
 
-clear full fig singularValue vectors
+clear full fig singularValue vectors evalPoints empiricalDist n sample empirical
 
 
 
