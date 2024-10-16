@@ -36,48 +36,50 @@ full(any(isnan(full),[2,3]),:,:) = [];
 % normalize with respect to magnitude
 full = normalize(full,2,'norm');
 
-% compute singular values for each county on its 6 decades
-% divide the square value by 6 (the number of decades)
-singularValue = zeros(size(full,1),1);
+% compute the maximum possible mean cosine similarity for each county
+% across its 6 decades
+% compute the mean cosine similarity to the mean normalized migration
+% vector
+mmcs = zeros(size(full,1),1);
 for i = 1:size(full,1)
     vectors = permute(full(i,:,:),[3,2,1]);
-    singularValue(i) = svds(vectors,1)^2 /6;
+    mmcs(i) = mean(vectors * normalize(mean(vectors),2,'norm')');
 end
 
 % generate empirical estimate of the theoretical ditribution of singular
 % values assuming the migration vectors have a uniform spherical
 % distribution
 
-% generate 10,0000 random samples, each of 6 unit vectors
+% generate 10,000 random samples, each of 6 unit vectors
 % We use a multivariate normal distribution and normalize it to achive the
 % desired uniform spherical distrubtion
-n = 200000;
+n = 10000;
 sample = mvnrnd(zeros(1,16),eye(16),6*n);
 sample = normalize(sample,2,'norm');
 sample = permute(reshape(sample,[n,6,16]),[2,3,1]);
 
-% compute their average square singular values
+% compute their maximum mean cosine similarity
 empirical = zeros(n,1);
 for i = 1:n
-    empirical(i) = svds(sample(:,:,i),1)^2 / 6;
+    empirical(i) = mean(sample(:,:,i)*normalize(mean(sample(:,:,i)),2,'norm')');
 end
 
 % apply a kernel density estimate
-[empiricalDist, evalPoints] = kde(empirical,bandwidth = 0.02);
+[empiricalDist, evalPoints] = kde(empirical,Bandwidth=0.02);
 evalPoints = [0;evalPoints;1];
 empiricalDist = [0;empiricalDist;0];
 
 
 % plot the distribution
 fig = figure;
-histogram(singularValue,linspace(0,1,26),Normalization='pdf')
+histogram(mmcs,linspace(0,1,26),Normalization='pdf')
 hold on
 plot(evalPoints,empiricalDist,color='black',LineWidth=3)
 hold off
 xlim([1/6,1])
 set(gca,'fontname','SansSerif')
-xlabel("Mean Squared Cosine Similarity")
-ylabel("Number of Counties")
+xlabel("Mean Cosine Similarity")
+ylabel("Probability Density")
 if showTitles
     title("Continuity of Migration Signatures")
 end
@@ -90,10 +92,10 @@ if exportFigures
     exportgraphics(fig,"./Export/ConsistencyOverTime.eps")
 end
 
-med = median(singularValue)
-avg = mean(singularValue)
+med = median(mmcs)
+avg = mean(mmcs)
 
-clear full fig singularValue vectors evalPoints empiricalDist n sample empirical
+clear full fig mmcs vectors evalPoints empiricalDist n sample empirical med avg
 
 
 
@@ -171,11 +173,17 @@ mainClusters(6:8) = [];
 
 %% Compute Signatures
 
+% compute the singular vector for each cluster. The singular vector as
+% compared to the mean normalized vector, maximizes the total squared cosine
+% similarity rather than just the total cosine similarity. Since there are
+% no pairwise negative similarities in each cluster, both methods will give
+% similar signature vectors. We choose the singular vector as maximizing
+% the squared cosine similarity is less affected by outliers.
 signatures = zeros(length(mainClusters),16);
 for i = 1:length(mainClusters)  % for each cluster above the min size
     vectors = unitRateVectors(labels==mainClusters(i),:);  % take the unit rate vectors
-    [a,~,s] = svds(vectors,1);  % find their singular vector
-    signatures(i,:) = s .* sign(mean(a));  % fix the sign for consistency
+    [a,~,s] = svds(vectors,1);
+    signatures(i,:) = s*sign(mean(a));
 end
 clear i a s vectors
 
@@ -212,20 +220,22 @@ clear colors i fig
 
 %% Type Scores
 
+% compute the cosine similarity of all county decades to all signature
+% types and output the scores in a csv file
 scores = normalize(reshape(permute(dataMatrix(:,:,:,1),[3 1 2]), [], 16),2,'norm') * signatures';
 
+% initialize the table
 t = cell2table(num2cell(scores));
 t.Properties.VariableNames = clusterNames;
 
+% construct the labeling variables
 stateName = convertCharsToStrings(reshape(repmat(stateNames,1,size(dataMatrix,3))',[],1));
-
 countyName = convertCharsToStrings(reshape(repmat(countyNames,1,size(dataMatrix,3))',[],1));
-
 fips = reshape(repmat(fipsNum,1,size(dataMatrix,3))',[],1);
-
 decades = ["1960";"1970";"1980";"1990";"2000";"2010"];
 decade = reshape(repmat(decades,1,size(dataMatrix,1)),[],1);
 
+% populate the table and export it
 scoresTable = [table(stateName,countyName,decade,fips), t];
 writetable(scoresTable,"./Export/SignatureTypeCountyScores.csv")
 
