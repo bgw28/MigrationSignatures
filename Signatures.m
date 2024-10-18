@@ -72,14 +72,22 @@ empiricalDist = [0;empiricalDist;0];
 
 % plot the distribution
 fig = figure;
-histogram(mmcs,linspace(0,1,26),Normalization='pdf')
-hold on
-plot(evalPoints,empiricalDist,color='black',LineWidth=3)
-hold off
+colororder(["#D95319", "#0072BD"])
+
+yyaxis left
+plot(evalPoints,empiricalDist,LineWidth=3)
+l = ylim;
+ylabel("Probability Density")
+
+yyaxis right
+histogram(mmcs,linspace(0,1,26))
+ylabel("Number of Counties")
+ylim([0,l(2)*0.04*size(mmcs,1)])
+
 xlim([1/6,1])
 set(gca,'fontname','SansSerif')
 xlabel("Mean Cosine Similarity")
-ylabel("Probability Density")
+
 if showTitles
     title("Continuity of Migration Signatures")
 end
@@ -95,7 +103,7 @@ end
 med = median(mmcs)
 avg = mean(mmcs)
 
-clear full fig mmcs vectors evalPoints empiricalDist n sample empirical med avg
+clear l full fig mmcs vectors evalPoints empiricalDist n sample empirical med avg
 
 
 
