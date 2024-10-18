@@ -75,12 +75,12 @@ fig = figure;
 colororder(["#D95319", "#0072BD"])
 
 yyaxis left
-plot(evalPoints,empiricalDist,LineWidth=3)
+p1 = plot(evalPoints,empiricalDist,LineWidth=3);
 l = ylim;
 ylabel("Probability Density")
 
 yyaxis right
-histogram(mmcs,linspace(0,1,26))
+p2 = histogram(mmcs,linspace(0,1,26));
 ylabel("Number of Counties")
 ylim([0,l(2)*0.04*size(mmcs,1)])
 
@@ -92,7 +92,7 @@ if showTitles
     title("Continuity of Migration Signatures")
 end
 fontsize(fig, 15, "points")
-legend("Counties", "Theoretical Random")
+legend([p2,p1], ["Counties";"Theoretical Random"])
 
 
 if exportFigures
